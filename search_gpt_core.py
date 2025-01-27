@@ -3,10 +3,14 @@ import json
 from openai import OpenAI
 from duckduckgo_search import DDGS
 
-API_KEY = os.getenv("OPENAI_API_KEY")
+# 从环境变量中获取 DeepSeek 的 API 密钥和地址
+API_KEY = os.getenv("YOUR_DEEPSEEK_API_KEY")
 BASE_URL = os.getenv("OPENAI_BASE_URL")
+
+# 初始化 OpenAI 客户端（实际调用的是 DeepSeek API）
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
+# 定义函数调用
 FUNCTIONS = [
     {
         "name": "search_duckduckgo",
@@ -25,33 +29,32 @@ FUNCTIONS = [
     }
 ]
 
-
+# DuckDuckGo 搜索函数
 def search_duckduckgo(keywords):
     search_term = " ".join(keywords)
     with DDGS() as ddgs:
         return list(ddgs.text(keywords=search_term, region="cn-zh", safesearch="on", max_results=5))
 
-
+# 打印搜索结果
 def print_search_results(results):
     for result in results:
-        print(
-            f"标题: {result['title']}\n链接: {result['href']}\n摘要: {result['body']}\n---")
+        print(f"标题: {result['title']}\n链接: {result['href']}\n摘要: {result['body']}\n---")
 
-
-def get_openai_response(messages, model="gpt-3.5-turbo", functions=None, function_call=None):
+# 调用 DeepSeek API 获取响应
+def get_openai_response(messages, model="deepseek-chat", functions=None, function_call=None):
     try:
         response = client.chat.completions.create(
-            model=model,
+            model=model,  # 使用 deepseek-chat 模型
             messages=messages,
             functions=functions,
             function_call=function_call
         )
         return response.choices[0].message
     except Exception as e:
-        print(f"调用OpenAI API时出错: {str(e)}")
+        print(f"调用 DeepSeek API 时出错: {str(e)}")
         return None
 
-
+# 处理函数调用
 def process_function_call(response_message):
     function_name = response_message.function_call.name
     function_args = json.loads(response_message.function_call.arguments)
@@ -76,7 +79,7 @@ def process_function_call(response_message):
         print(f"未知的函数名称: {function_name}")
         return None
 
-
+# 主函数
 def main(question):
     print(f"问题：{question}")
 
@@ -101,7 +104,7 @@ def main(question):
                 }
             ])
 
-            final_response = get_openai_response(messages, model="gpt-4o")
+            final_response = get_openai_response(messages, model="deepseek-chat")
             if final_response:
                 print("\n最终回答:")
                 print(final_response.content)
@@ -109,6 +112,6 @@ def main(question):
         print("\n模型直接回答:")
         print(response_message.content)
 
-
+# 程序入口
 if __name__ == "__main__":
     main("植物大战僵尸杂交版的作者是谁？他是怎么想到做出来这个游戏的？")
