@@ -50,9 +50,11 @@
 ## 项目结构
 
 searchgpt-explorer-learning/
-├── LICENSE # 项目许可证文件
-├── README.md # 项目说明文档
-├── requirements.txt # 项目依赖包列表
-├── search_gpt_core.py # 主脚本文件，集成搜索 API 和 DeepSeek 模型调用
 
+├── LICENSE             # 项目许可证文件
 
+├── README.md           # 项目说明文档
+
+├── requirements.txt    # 项目依赖包列表
+
+├── search_gpt_core.py  # 主脚本文件，集成搜索 API 和 DeepSeek 模型调用
